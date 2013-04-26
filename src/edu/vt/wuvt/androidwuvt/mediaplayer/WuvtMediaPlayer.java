@@ -8,6 +8,7 @@ import android.util.Log;
 public class WuvtMediaPlayer {
 	private final static MediaPlayer MEDIA_PLAYER = new MediaPlayer();
 	private final static String WUVT_URL = "http://engine.collegemedia.vt.edu:8000/wuvt.ogg";
+	
 	public final static String TAG = WuvtMediaPlayer.class.getName();
 	
 	public static void prepare(MediaPlayer.OnPreparedListener listener) {
