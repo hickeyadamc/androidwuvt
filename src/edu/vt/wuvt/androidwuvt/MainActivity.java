@@ -2,9 +2,12 @@ package edu.vt.wuvt.androidwuvt;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
+	
+	private Context mContext;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
