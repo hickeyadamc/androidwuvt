@@ -30,33 +30,33 @@ public class MainActivity extends SherlockActivity {
 			public void ready() {
 				ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
 				pb.setVisibility(View.INVISIBLE);
-				play = (Button) findViewById(R.id.play);
-				play.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View arg0) {
-						wuvtPlayer.play();
-						
-					}
-				});
-				pause = (Button) findViewById(R.id.pause);
-				pause.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						wuvtPlayer.pause();
-						
-					}
-				});
-				stop = (Button) findViewById(R.id.stop);
-				stop.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						wuvtPlayer.stop();
-						
-					}
-				});
+				
+			}
+		});
+		play = (Button) findViewById(R.id.play);
+		play.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				wuvtPlayer.play();
+				
+			}
+		});
+		pause = (Button) findViewById(R.id.pause);
+		pause.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				wuvtPlayer.pause();
+				
+			}
+		});
+		stop = (Button) findViewById(R.id.stop);
+		stop.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				wuvtPlayer.stop();
 				
 			}
 		});

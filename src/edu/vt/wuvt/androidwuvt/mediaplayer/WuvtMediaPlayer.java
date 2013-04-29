@@ -78,7 +78,11 @@ public class WuvtMediaPlayer {
 			mContext.startService(startMediaPlayerIntent);		
 			mPrepareStarted = true;
 		} else {
-			return;
+			if(mPrepareFinished == true) {
+				playerReadyReceived();
+			} else {
+				return;
+			}
 		}
 		
 	}
@@ -88,11 +92,7 @@ public class WuvtMediaPlayer {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				mPrepareFinished = true;
-				for(WuvtPlayerReadyListener readyListener : mReadyListeners) {
-					readyListener.ready();
-				}
-				mReadyListeners.clear();
+				playerReadyReceived();
 				
 			}
 			
@@ -100,6 +100,14 @@ public class WuvtMediaPlayer {
 		mBroadcastReceivers.add(playerReadyReceiver);
 		mContext.registerReceiver(playerReadyReceiver, new IntentFilter(MediaPlayerService.SEND_BROADCAST_PREPARED));
 		
+	}
+	
+	private void playerReadyReceived() {
+		mPrepareFinished = true;
+		for(WuvtPlayerReadyListener readyListener : mReadyListeners) {
+			readyListener.ready();
+		}
+		mReadyListeners.clear();
 	}
 	public void isPlaying(WuvtIsPlayingListener listener) {
 		mWuvtPlayingListeners.add(listener);
@@ -123,6 +131,7 @@ public class WuvtMediaPlayer {
 		for(BroadcastReceiver receiver : mBroadcastReceivers) {
 			mContext.unregisterReceiver(receiver);
 		}
+		mBroadcastReceivers.clear();
 		Intent stopMediaPlayerServiceIntent = new Intent(mContext,MediaPlayerService.class);
 		mContext.stopService(stopMediaPlayerServiceIntent);
 		

@@ -129,6 +129,7 @@ public class MediaPlayerService extends Service {
 		for(BroadcastReceiver receiver : mBroadcastReceivers) {
 			unregisterReceiver(receiver);
 		}
+		mBroadcastReceivers.clear();
 		cancelNotification();
 	}
 
