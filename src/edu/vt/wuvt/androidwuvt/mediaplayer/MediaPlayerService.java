@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +18,9 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class MediaPlayerService extends Service {
+
 	public static final String TAG = MediaPlayerService.class.getName();
+	
 	public static final String SEND_BROADCAST_PREPARED = "MediaPlayerServiceSendBroadCastPrepared";
 	public static final String MUSIC_URL_KEY = "MediaPlayerServiceMusicUrlKey";
 	public static final String REQUEST_PLAYING_STATUS = "MediaPlayerIsPlayingStatusRequest";
@@ -24,16 +29,23 @@ public class MediaPlayerService extends Service {
 	public static final String RECEIVE_BROADCAST_PLAY_MUSIC = "MediaPlayerReceivePlayMusic";
 	public static final String RECEIVE_BROADCAST_PAUSE_MUSIC = "MediaPlayerReceivePauseMusic";
 	
+	private static final int NOTIFICATION_ID = 1;
+	
+	
 	private MediaPlayer mMediaPlayer;
 	private List<BroadcastReceiver> mBroadcastReceivers = new ArrayList<BroadcastReceiver>();
+	private IMediaPlayerServiceNotificationConfig mNotificationConfig = new WuvtNotificationConfig();
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		initMediaPlayer(intent);
 		initPlayReceiver();		
 		initPauseReceiver();
+		initNotification();
 		return START_STICKY;
 	}
+
+
 
 	private void initPauseReceiver() {
 		BroadcastReceiver pauseReceiver = new BroadcastReceiver() {
@@ -113,16 +125,44 @@ public class MediaPlayerService extends Service {
 	
 	@Override
 	public void onDestroy() {
+		super.onDestroy();
 		for(BroadcastReceiver receiver : mBroadcastReceivers) {
 			unregisterReceiver(receiver);
 		}
-		super.onDestroy();
+		cancelNotification();
 	}
+
+	private void cancelNotification() {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		mNotificationManager.cancel(NOTIFICATION_ID);
+		
+	}
+
+
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	private void initNotification() {
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+		int icon = mNotificationConfig.getIconId();
+		CharSequence tickerText = "Tutorial: Music In Service";
+		long when = System.currentTimeMillis();
+		Notification notification = new Notification(icon,tickerText,when);
+		notification.flags = Notification.FLAG_ONGOING_EVENT;
+		CharSequence contentTitle = "Music In Service App Tutorial";
+		CharSequence contentText = "Listen to w/e";
+		Context context = getApplicationContext();
+		Intent notificationIntent = new Intent(context, mNotificationConfig.getActivityClass());
+		PendingIntent contentIntent = PendingIntent.getActivity(this,  0, notificationIntent, 0);
+		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+		mNotificationManager.notify(NOTIFICATION_ID , notification);
+	
+}
 
 }
