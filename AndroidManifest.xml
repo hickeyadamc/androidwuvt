@@ -23,6 +23,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:enabled="true"
+            android:name="edu.vt.wuvt.androidwuvt.mediaplayer.MediaPlayerService"
+            android:exported="false"/>
     </application>
 
 </manifest>
