@@ -18,4 +18,19 @@ public class WuvtNotificationConfig implements IMediaPlayerServiceNotificationCo
 		return MainActivity.class;
 	}
 
+	@Override
+	public CharSequence getContentTitle() {
+		return "Temp Content Title";
+	}
+
+	@Override
+	public CharSequence getContextText() {
+		return "Temp Context Text";
+	}
+
+	@Override
+	public CharSequence getTickerText() {
+		return "Temp Ticker Text";
+	}
+
 }

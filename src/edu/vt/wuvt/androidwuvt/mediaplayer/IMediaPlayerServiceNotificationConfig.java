@@ -6,4 +6,10 @@ public interface IMediaPlayerServiceNotificationConfig {
 
 	Class<?> getActivityClass();
 
+	CharSequence getContentTitle();
+
+	CharSequence getContextText();
+
+	CharSequence getTickerText();
+
 }

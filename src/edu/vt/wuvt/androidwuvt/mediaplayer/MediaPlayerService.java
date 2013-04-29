@@ -21,13 +21,13 @@ public class MediaPlayerService extends Service {
 
 	public static final String TAG = MediaPlayerService.class.getName();
 	
-	public static final String SEND_BROADCAST_PREPARED = "MediaPlayerServiceSendBroadCastPrepared";
-	public static final String MUSIC_URL_KEY = "MediaPlayerServiceMusicUrlKey";
-	public static final String REQUEST_PLAYING_STATUS = "MediaPlayerIsPlayingStatusRequest";
-	public static final String SEND_MUSIC_PLAYING_STATUS = "MediaPlayerSendMusicPlayingStatus";
-	public static final String MUSIC_PLAYING_STATUS_KEY = "MediaPlayerMusicPlayingStatusKey";
-	public static final String RECEIVE_BROADCAST_PLAY_MUSIC = "MediaPlayerReceivePlayMusic";
-	public static final String RECEIVE_BROADCAST_PAUSE_MUSIC = "MediaPlayerReceivePauseMusic";
+	protected static final String SEND_BROADCAST_PREPARED = "MediaPlayerServiceSendBroadCastPrepared";
+	protected static final String MUSIC_URL_KEY = "MediaPlayerServiceMusicUrlKey";
+	protected static final String REQUEST_PLAYING_STATUS = "MediaPlayerIsPlayingStatusRequest";
+	protected static final String SEND_MUSIC_PLAYING_STATUS = "MediaPlayerSendMusicPlayingStatus";
+	protected static final String MUSIC_PLAYING_STATUS_KEY = "MediaPlayerMusicPlayingStatusKey";
+	protected static final String RECEIVE_BROADCAST_PLAY_MUSIC = "MediaPlayerReceivePlayMusic";
+	protected static final String RECEIVE_BROADCAST_PAUSE_MUSIC = "MediaPlayerReceivePauseMusic";
 	
 	private static final int NOTIFICATION_ID = 1;
 	
@@ -151,12 +151,12 @@ public class MediaPlayerService extends Service {
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		int icon = mNotificationConfig.getIconId();
-		CharSequence tickerText = "Tutorial: Music In Service";
+		CharSequence tickerText = mNotificationConfig.getTickerText();
 		long when = System.currentTimeMillis();
 		Notification notification = new Notification(icon,tickerText,when);
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		CharSequence contentTitle = "Music In Service App Tutorial";
-		CharSequence contentText = "Listen to w/e";
+		CharSequence contentTitle = mNotificationConfig.getContentTitle();
+		CharSequence contentText = mNotificationConfig.getContextText();
 		Context context = getApplicationContext();
 		Intent notificationIntent = new Intent(context, mNotificationConfig.getActivityClass());
 		PendingIntent contentIntent = PendingIntent.getActivity(this,  0, notificationIntent, 0);
