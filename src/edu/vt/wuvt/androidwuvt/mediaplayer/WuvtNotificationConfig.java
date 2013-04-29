@@ -10,7 +10,7 @@ public class WuvtNotificationConfig implements IMediaPlayerServiceNotificationCo
 
 	@Override
 	public int getIconId() {
-		return R.drawable.ic_launcher;
+		return R.drawable.wuvttiny;
 	}
 
 	@Override
@@ -20,17 +20,17 @@ public class WuvtNotificationConfig implements IMediaPlayerServiceNotificationCo
 
 	@Override
 	public CharSequence getContentTitle() {
-		return "Temp Content Title";
+		return "WUVT4Android";
 	}
 
 	@Override
 	public CharSequence getContextText() {
-		return "Temp Context Text";
+		return "Playing";
 	}
 
 	@Override
 	public CharSequence getTickerText() {
-		return "Temp Ticker Text";
+		return "WUVT4Android";
 	}
 
 }

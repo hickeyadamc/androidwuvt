@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.media.MediaPlayer.TrackInfo;
+import android.media.MediaMetadataRetriever;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -42,7 +44,6 @@ public class MediaPlayerService extends Service {
 		initPlayReceiver();		
 		initPauseReceiver();
 		initPlayingStatusReceiver();
-		initNotification();
 		return START_STICKY;
 	}
 
@@ -106,6 +107,7 @@ public class MediaPlayerService extends Service {
 	private void play() {
 		if(!mMediaPlayer.isPlaying()) {
 			mMediaPlayer.start();
+			initNotification();
 		} else {
 			return;
 		}
@@ -113,6 +115,7 @@ public class MediaPlayerService extends Service {
 	private void pause() {
 		if(mMediaPlayer.isPlaying()) {
 			mMediaPlayer.pause();
+			cancelNotification();
 		} else {
 			return;
 		}
@@ -121,7 +124,8 @@ public class MediaPlayerService extends Service {
 	private void initMediaPlayer(Intent startUpIntent) {
 		mMediaPlayer = new MediaPlayer();
 		try {
-			mMediaPlayer.setDataSource(startUpIntent.getExtras().getString(MUSIC_URL_KEY));
+			String musicUrl = startUpIntent.getExtras().getString(MUSIC_URL_KEY);
+			mMediaPlayer.setDataSource(musicUrl);
 			mMediaPlayer.prepareAsync();
 			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
 				
