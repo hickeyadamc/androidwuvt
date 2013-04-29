@@ -41,8 +41,35 @@ public class MediaPlayerService extends Service {
 		initMediaPlayer(intent);
 		initPlayReceiver();		
 		initPauseReceiver();
+		initPlayingStatusReceiver();
 		initNotification();
 		return START_STICKY;
+	}
+
+
+
+	private void initPlayingStatusReceiver() {
+		BroadcastReceiver playingStatusReceiver = new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				sendPlayingStatus();
+				
+			}
+			
+		};
+		mBroadcastReceivers.add(playingStatusReceiver);
+		registerReceiver(playingStatusReceiver, new IntentFilter(REQUEST_PLAYING_STATUS));
+		
+	}
+
+
+
+	private void sendPlayingStatus() {
+		Intent playingStatusIntent = new Intent(SEND_MUSIC_PLAYING_STATUS);
+		playingStatusIntent.putExtra(MUSIC_PLAYING_STATUS_KEY, mMediaPlayer.isPlaying());
+		sendBroadcast(playingStatusIntent);
+		
 	}
 
 

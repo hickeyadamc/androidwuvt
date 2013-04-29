@@ -134,6 +134,8 @@ public class WuvtMediaPlayer {
 		mBroadcastReceivers.clear();
 		Intent stopMediaPlayerServiceIntent = new Intent(mContext,MediaPlayerService.class);
 		mContext.stopService(stopMediaPlayerServiceIntent);
+		mPrepareStarted = false;
+		mPrepareFinished = false;
 		
 		
 	}
