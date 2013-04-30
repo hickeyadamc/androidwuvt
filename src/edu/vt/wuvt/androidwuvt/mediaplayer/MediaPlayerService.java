@@ -162,6 +162,7 @@ public class MediaPlayerService extends Service {
 		}
 		mBroadcastReceivers.clear();
 		cancelNotification();
+		mMediaPlayer.stop();
 	}
 
 	private void cancelNotification() {
