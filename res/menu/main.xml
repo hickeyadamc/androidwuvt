@@ -8,14 +8,14 @@
     <item
         android:id="@+id/play"
         android:showAsAction="always"
-        android:icon="@drawable/play"/>
+        android:icon="@drawable/play_white"/>
     <item 
         android:id="@+id/stop"
         android:showAsAction="always"
-        android:icon="@drawable/stop"        />
+        android:icon="@drawable/stop_white"        />
     <item
         android:id="@+id/pause"
         android:showAsAction="always"
-        android:icon="@drawable/pause" />
+        android:icon="@drawable/pause_white" />
 
 </menu>
