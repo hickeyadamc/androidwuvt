@@ -16,6 +16,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.TrackInfo;
 import android.media.MediaMetadataRetriever;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -40,6 +41,7 @@ public class MediaPlayerService extends Service {
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.d(TAG,"OnStartCommand");
 		initMediaPlayer(intent);
 		initPlayReceiver();		
 		initPauseReceiver();
@@ -116,13 +118,27 @@ public class MediaPlayerService extends Service {
 		if(mMediaPlayer.isPlaying()) {
 			mMediaPlayer.pause();
 			cancelNotification();
+			startShutdownTimer();
 		} else {
 			return;
 		}
 	}
 
+	private void startShutdownTimer() {
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			    public void run() {
+			        stopSelf();
+			    }
+			}, 10000);    //will stop service after 10 seconds
+		
+	}
+
+
+
 	private void initMediaPlayer(Intent startUpIntent) {
 		mMediaPlayer = new MediaPlayer();
+		mMediaPlayer.reset();
 		try {
 			String musicUrl = startUpIntent.getExtras().getString(MUSIC_URL_KEY);
 			mMediaPlayer.setDataSource(musicUrl);
@@ -131,6 +147,7 @@ public class MediaPlayerService extends Service {
 				
 				@Override
 				public void onPrepared(MediaPlayer mediaPlayer) {
+					Log.d(TAG,"MusicPlayerPrepared");
 					broadcastPrepareFinished();
 					
 				}
@@ -162,7 +179,8 @@ public class MediaPlayerService extends Service {
 		}
 		mBroadcastReceivers.clear();
 		cancelNotification();
-		mMediaPlayer.stop();
+		mMediaPlayer.reset();
+		mMediaPlayer.release();
 	}
 
 	private void cancelNotification() {

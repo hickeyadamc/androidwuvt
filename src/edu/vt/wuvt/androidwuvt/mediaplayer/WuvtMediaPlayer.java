@@ -15,8 +15,8 @@ public class WuvtMediaPlayer {
 	public interface WuvtPlayerReadyListener {
 		public void ready();
 	}
-	public interface WuvtIsPlayingListener {
-		public void isPlaying(boolean playing);
+	public enum PlayingStatus {
+		Playing, Paused, Stopped, Loading
 	}
 	public final static String TAG = WuvtMediaPlayer.class.getName();
 	private final static String WUVT_URL = "http://engine.collegemedia.vt.edu:8000/wuvt.ogg";
@@ -24,11 +24,12 @@ public class WuvtMediaPlayer {
 	
 	private final Context mContext;
 	private List<WuvtPlayerReadyListener> mReadyListeners = new ArrayList<WuvtPlayerReadyListener>();
-	private List<WuvtIsPlayingListener> mWuvtPlayingListeners = new ArrayList<WuvtIsPlayingListener>();
 	private static WuvtMediaPlayer mInstance = null;
 	
-	private static boolean mPrepareStarted = false;
-	private static boolean mPrepareFinished = false;
+//	private static boolean mPrepareStarted = false;
+//	private static boolean mPrepareFinished = false;
+	
+	private static PlayingStatus sStatus = null;
 	
 	private List<BroadcastReceiver> mBroadcastReceivers = new ArrayList<BroadcastReceiver>();
 	
@@ -37,6 +38,7 @@ public class WuvtMediaPlayer {
 	 */
 	public static WuvtMediaPlayer get(Context context) {
 		if(mInstance == null) {
+			sStatus = PlayingStatus.Stopped;
 			mInstance = new WuvtMediaPlayer(context);
 		}
 		return mInstance;
@@ -48,41 +50,16 @@ public class WuvtMediaPlayer {
 	
 	private WuvtMediaPlayer(Context context) {
 		mContext = context;
-		initPlayerReadyReceiver();
-		initPlayingStatusReceiver();
-
-	}
-	
-	private void initPlayingStatusReceiver() {
-		BroadcastReceiver isPlayingReceiver = new BroadcastReceiver() {
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				boolean playingStatus = intent.getBooleanExtra(MediaPlayerService.MUSIC_PLAYING_STATUS_KEY, false);
-				for(WuvtIsPlayingListener playingListener : mWuvtPlayingListeners) {
-					playingListener.isPlaying(playingStatus);
-				}
-				mWuvtPlayingListeners.clear();
-				
-			}
-			
-		};
-		mBroadcastReceivers.add(isPlayingReceiver);
-		mContext.registerReceiver(isPlayingReceiver, new IntentFilter(MediaPlayerService.SEND_MUSIC_PLAYING_STATUS));
 		
+
 	}
 	private void startMediaPlayer() {
-		if(mPrepareStarted == false) {
+		if(sStatus == PlayingStatus.Stopped) {
 			Intent startMediaPlayerIntent = new Intent(mContext,MediaPlayerService.class);
 			startMediaPlayerIntent.putExtra(MediaPlayerService.MUSIC_URL_KEY, WUVT_URL);
+			initPlayerReadyReceiver();
 			mContext.startService(startMediaPlayerIntent);		
-			mPrepareStarted = true;
-		} else {
-			if(mPrepareFinished == true) {
-				playerReadyReceived();
-			} else {
-				return;
-			}
+			sStatus = PlayingStatus.Loading;
 		}
 		
 	}
@@ -92,6 +69,7 @@ public class WuvtMediaPlayer {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
+				Log.d(TAG,"PlayerReady Broadcast received");
 				playerReadyReceived();
 				
 			}
@@ -103,47 +81,45 @@ public class WuvtMediaPlayer {
 	}
 	
 	private void playerReadyReceived() {
-		mPrepareFinished = true;
+		sStatus = PlayingStatus.Paused;
 		for(WuvtPlayerReadyListener readyListener : mReadyListeners) {
 			readyListener.ready();
 		}
 		mReadyListeners.clear();
 	}
-	public void isPlaying(WuvtIsPlayingListener listener) {
-		mWuvtPlayingListeners.add(listener);
-		requestPlayingStatus();
-	}
-
-	private void requestPlayingStatus() {
-		Intent requestPlayingStatus = new Intent(MediaPlayerService.REQUEST_PLAYING_STATUS);
-		mContext.sendBroadcast(requestPlayingStatus);
-		
-	}
 	public void play() {
-		Intent playIntent = new Intent(MediaPlayerService.RECEIVE_BROADCAST_PLAY_MUSIC);
-		mContext.sendBroadcast(playIntent);
+		if(sStatus == PlayingStatus.Paused) {
+			Intent playIntent = new Intent(MediaPlayerService.RECEIVE_BROADCAST_PLAY_MUSIC);
+			mContext.sendBroadcast(playIntent);
+			sStatus = PlayingStatus.Playing;
+		} else {
+			Log.e(TAG, "Couldn't play. Status is: " + sStatus);
+		}
 	}
 	public void pause() {
-		Intent pauseIntent = new Intent(MediaPlayerService.RECEIVE_BROADCAST_PAUSE_MUSIC);
-		mContext.sendBroadcast(pauseIntent);
+		if(sStatus == PlayingStatus.Playing) {
+			Intent pauseIntent = new Intent(MediaPlayerService.RECEIVE_BROADCAST_PAUSE_MUSIC);
+			mContext.sendBroadcast(pauseIntent);
+			sStatus = PlayingStatus.Paused;
+		} else {
+			Log.e(TAG,"Couldn't pause. Status is: " + sStatus);
+		}
 	}
 	public void stop() {
+		
 		for(BroadcastReceiver receiver : mBroadcastReceivers) {
 			mContext.unregisterReceiver(receiver);
 		}
 		mBroadcastReceivers.clear();
+		sStatus = PlayingStatus.Stopped;
 		Intent stopMediaPlayerServiceIntent = new Intent(mContext,MediaPlayerService.class);
 		mContext.stopService(stopMediaPlayerServiceIntent);
-		mPrepareStarted = false;
-		mPrepareFinished = false;
 		
 		
 	}
-	public boolean isPrepareStarted() {
-		return mPrepareStarted;
+	public PlayingStatus getStatus() {
+		return sStatus;
 	}
-	public boolean isPrepareFinished() {
-		return mPrepareFinished;
-	}
+	
 
 }
