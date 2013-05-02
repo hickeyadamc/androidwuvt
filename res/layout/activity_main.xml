@@ -8,45 +8,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-
-    <Button
-        android:id="@+id/play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView1"
-        android:layout_marginLeft="28dp"
-        android:layout_marginTop="67dp"
-        android:text="play" />
-
-    <Button
-        android:id="@+id/stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/play"
-        android:layout_centerVertical="true"
-        android:text="stop" />
-
-    <Button
-        android:id="@+id/pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/play"
-        android:layout_marginLeft="46dp"
-        android:layout_toRightOf="@+id/play"
-        android:text="pause" />
-
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/pause"
-        android:layout_toRightOf="@+id/play" />
+    <android.support.v4.view.ViewPager
+         android:id="@+id/viewPager1"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent" />
 
 </RelativeLayout>
