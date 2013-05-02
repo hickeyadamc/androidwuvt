@@ -4,17 +4,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <CheckBox
-        android:id="@+id/checkBox1"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CheckBox" />
-
-    <Button
-        android:id="@+id/button1"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button" />
+        android:layout_weight="0.51"
+        android:src="@drawable/wuvt" />
 
 </LinearLayout>
