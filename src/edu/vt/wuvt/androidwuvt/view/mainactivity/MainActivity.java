@@ -84,12 +84,13 @@ public class MainActivity extends SherlockActivity {
 			}
 		});
 		
-		AsyncHttpUtils.doGet("http://www.google.com", new AsyncHttpListener() {
+		AsyncHttpUtils.doGet("http://www.wuvt.vt.edu/last15", new AsyncHttpListener() {
 
 
 			@Override
 			public void onResponse(String response) {
 				Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
+				Log.v(TAG, response);
 				
 			}
 		}, new AsyncHttpErrorListener() {
