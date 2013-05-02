@@ -10,7 +10,7 @@ public class WuvtNotificationConfig implements IMediaPlayerServiceNotificationCo
 
 	@Override
 	public int getIconId() {
-		return R.drawable.wuvttiny;
+		return R.drawable.wuvt;
 	}
 
 	@Override

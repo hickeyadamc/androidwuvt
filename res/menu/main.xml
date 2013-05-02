@@ -5,5 +5,17 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
+    <item
+        android:id="@+id/play"
+        android:showAsAction="always"
+        android:icon="@drawable/play_white"/>
+    <item 
+        android:id="@+id/stop"
+        android:showAsAction="always"
+        android:icon="@drawable/stop_white"        />
+    <item
+        android:id="@+id/pause"
+        android:showAsAction="always"
+        android:icon="@drawable/pause_white" />
 
 </menu>
