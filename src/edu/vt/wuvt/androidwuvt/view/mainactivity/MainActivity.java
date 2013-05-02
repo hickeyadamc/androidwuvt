@@ -49,9 +49,16 @@ public class MainActivity extends SherlockFragmentActivity {
      	
     	return true;
     }
+    
+    @Override
+    protected void onStop() {
+    	// TODO Auto-generated method stub
+    	super.onStop();
+    	mPlayer.onStopCalled();
+    }
 
     private void initPlayer() {
-        mPlayer = WuvtMediaPlayer.get(this);
+        mPlayer = new WuvtMediaPlayer(this);
         if(mPlayer.getStatus() == PlayingStatus.Stopped) {
         	preparePlayer();
         } else {

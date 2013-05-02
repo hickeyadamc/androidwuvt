@@ -1,14 +1,14 @@
 package edu.vt.wuvt.androidwuvt.mediaplayer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.MediaPlayer;
 import android.util.Log;
 
 public class WuvtMediaPlayer {
@@ -24,42 +24,39 @@ public class WuvtMediaPlayer {
 	
 	private final Context mContext;
 	private List<WuvtPlayerReadyListener> mReadyListeners = new ArrayList<WuvtPlayerReadyListener>();
-	private static WuvtMediaPlayer mInstance = null;
 	
-//	private static boolean mPrepareStarted = false;
-//	private static boolean mPrepareFinished = false;
 	
-	private static PlayingStatus sStatus = null;
+	private PlayingStatus mStatus = PlayingStatus.Stopped;
 	
 	private List<BroadcastReceiver> mBroadcastReceivers = new ArrayList<BroadcastReceiver>();
 	
-	/*
-	 * Get the instance of WuvtMediaPlayer
-	 */
-	public static WuvtMediaPlayer get(Context context) {
-		if(mInstance == null) {
-			sStatus = PlayingStatus.Stopped;
-			mInstance = new WuvtMediaPlayer(context);
-		}
-		return mInstance;
-	}
 	public void prepare(WuvtPlayerReadyListener listener) {
 		mReadyListeners.add(listener);
 		startMediaPlayer();
 	}
 	
-	private WuvtMediaPlayer(Context context) {
+	public WuvtMediaPlayer(Context context) {
 		mContext = context;
+		boolean serviceIsRunning = isMediaPlayerServiceRunning();
 		
-
+		if(serviceIsRunning) {
+			initPlayerReadyReceiver();
+			
+			//see onStopCalled()
+			//it's assumed that we killed the service if it were in a state other than playing 
+			//Therefore, if this object is instantiated and the service is running, the state must be playing
+			mStatus = PlayingStatus.Playing;
+		}
+		
 	}
+
 	private void startMediaPlayer() {
-		if(sStatus == PlayingStatus.Stopped) {
+		if(mStatus == PlayingStatus.Stopped) {
 			Intent startMediaPlayerIntent = new Intent(mContext,MediaPlayerService.class);
 			startMediaPlayerIntent.putExtra(MediaPlayerService.MUSIC_URL_KEY, WUVT_URL);
 			initPlayerReadyReceiver();
 			mContext.startService(startMediaPlayerIntent);		
-			sStatus = PlayingStatus.Loading;
+			mStatus = PlayingStatus.Loading;
 		}
 		
 	}
@@ -81,44 +78,65 @@ public class WuvtMediaPlayer {
 	}
 	
 	private void playerReadyReceived() {
-		sStatus = PlayingStatus.Paused;
+		mStatus = PlayingStatus.Paused;
 		for(WuvtPlayerReadyListener readyListener : mReadyListeners) {
 			readyListener.ready();
 		}
 		mReadyListeners.clear();
 	}
 	public void play() {
-		if(sStatus == PlayingStatus.Paused) {
+		if(mStatus == PlayingStatus.Paused) {
 			Intent playIntent = new Intent(MediaPlayerService.RECEIVE_BROADCAST_PLAY_MUSIC);
 			mContext.sendBroadcast(playIntent);
-			sStatus = PlayingStatus.Playing;
+			mStatus = PlayingStatus.Playing;
 		} else {
-			Log.e(TAG, "Couldn't play. Status is: " + sStatus);
+			Log.e(TAG, "Couldn't play. Status is: " + mStatus);
 		}
 	}
 	public void pause() {
-		if(sStatus == PlayingStatus.Playing) {
+		if(mStatus == PlayingStatus.Playing) {
 			Intent pauseIntent = new Intent(MediaPlayerService.RECEIVE_BROADCAST_PAUSE_MUSIC);
 			mContext.sendBroadcast(pauseIntent);
-			sStatus = PlayingStatus.Paused;
+			mStatus = PlayingStatus.Paused;
 		} else {
-			Log.e(TAG,"Couldn't pause. Status is: " + sStatus);
+			Log.e(TAG,"Couldn't pause. Status is: " + mStatus);
 		}
 	}
 	public void stop() {
-		
-		for(BroadcastReceiver receiver : mBroadcastReceivers) {
-			mContext.unregisterReceiver(receiver);
-		}
-		mBroadcastReceivers.clear();
-		sStatus = PlayingStatus.Stopped;
+		unregisterAllReceivers();
+		mStatus = PlayingStatus.Stopped;
 		Intent stopMediaPlayerServiceIntent = new Intent(mContext,MediaPlayerService.class);
 		mContext.stopService(stopMediaPlayerServiceIntent);
 		
 		
 	}
 	public PlayingStatus getStatus() {
-		return sStatus;
+		return mStatus;
+	}
+	public void onStopCalled() {
+		Log.d(TAG,"onStopCalled");
+		if(mStatus == PlayingStatus.Playing) {
+			unregisterAllReceivers();
+		} else {
+			stop();
+		}
+		
+	}
+	private void unregisterAllReceivers() {
+		for(BroadcastReceiver receiver : mBroadcastReceivers) {
+			mContext.unregisterReceiver(receiver);
+		}
+		mBroadcastReceivers.clear();
+		
+	}
+	private boolean isMediaPlayerServiceRunning() {
+	    ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (MediaPlayerService.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 	
 

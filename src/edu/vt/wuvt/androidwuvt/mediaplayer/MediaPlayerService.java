@@ -21,18 +21,18 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class MediaPlayerService extends Service {
+	public enum MediaPlayerServiceStatus {
+		Playing, Paused, Loading
+	}
 
 	public static final String TAG = MediaPlayerService.class.getName();
 	
 	protected static final String SEND_BROADCAST_PREPARED = "MediaPlayerServiceSendBroadCastPrepared";
 	protected static final String MUSIC_URL_KEY = "MediaPlayerServiceMusicUrlKey";
-	protected static final String REQUEST_PLAYING_STATUS = "MediaPlayerIsPlayingStatusRequest";
-	protected static final String SEND_MUSIC_PLAYING_STATUS = "MediaPlayerSendMusicPlayingStatus";
-	protected static final String MUSIC_PLAYING_STATUS_KEY = "MediaPlayerMusicPlayingStatusKey";
 	protected static final String RECEIVE_BROADCAST_PLAY_MUSIC = "MediaPlayerReceivePlayMusic";
 	protected static final String RECEIVE_BROADCAST_PAUSE_MUSIC = "MediaPlayerReceivePauseMusic";
-	
 	private static final int NOTIFICATION_ID = 1;
+
 	
 	
 	private MediaPlayer mMediaPlayer;
@@ -45,35 +45,9 @@ public class MediaPlayerService extends Service {
 		initMediaPlayer(intent);
 		initPlayReceiver();		
 		initPauseReceiver();
-		initPlayingStatusReceiver();
 		return START_STICKY;
 	}
 
-
-
-	private void initPlayingStatusReceiver() {
-		BroadcastReceiver playingStatusReceiver = new BroadcastReceiver() {
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				sendPlayingStatus();
-				
-			}
-			
-		};
-		mBroadcastReceivers.add(playingStatusReceiver);
-		registerReceiver(playingStatusReceiver, new IntentFilter(REQUEST_PLAYING_STATUS));
-		
-	}
-
-
-
-	private void sendPlayingStatus() {
-		Intent playingStatusIntent = new Intent(SEND_MUSIC_PLAYING_STATUS);
-		playingStatusIntent.putExtra(MUSIC_PLAYING_STATUS_KEY, mMediaPlayer.isPlaying());
-		sendBroadcast(playingStatusIntent);
-		
-	}
 
 
 
@@ -118,20 +92,10 @@ public class MediaPlayerService extends Service {
 		if(mMediaPlayer.isPlaying()) {
 			mMediaPlayer.pause();
 			cancelNotification();
-			startShutdownTimer();
+//			startShutdownTimer();
 		} else {
 			return;
 		}
-	}
-
-	private void startShutdownTimer() {
-		new Handler().postDelayed(new Runnable() {
-			@Override
-			    public void run() {
-			        stopSelf();
-			    }
-			}, 10000);    //will stop service after 10 seconds
-		
 	}
 
 
@@ -141,6 +105,10 @@ public class MediaPlayerService extends Service {
 		mMediaPlayer.reset();
 		try {
 			String musicUrl = startUpIntent.getExtras().getString(MUSIC_URL_KEY);
+			if(musicUrl == null) {
+				Log.e(TAG,"MusicUrl was null");
+				return;
+			}
 			mMediaPlayer.setDataSource(musicUrl);
 			mMediaPlayer.prepareAsync();
 			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
