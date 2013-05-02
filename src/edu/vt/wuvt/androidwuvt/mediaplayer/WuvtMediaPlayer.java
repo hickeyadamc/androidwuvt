@@ -19,7 +19,7 @@ public class WuvtMediaPlayer {
 		Playing, Paused, Stopped, Loading
 	}
 	public final static String TAG = WuvtMediaPlayer.class.getName();
-	private final static String WUVT_URL = "http://engine.collegemedia.vt.edu:8000/wuvt.ogg";
+	private final static String WUVT_URL = "http://128.173.235.23:8000/wuvt-hq.ogg";
 	
 	
 	private final Context mContext;
