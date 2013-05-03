@@ -73,7 +73,7 @@ public class MainActivity extends SherlockFragmentActivity {
     	MenuItem playPause = menu.findItem(R.id.play_pause);
     	MenuItem stop = menu.findItem(R.id.stop);    	
     	MenuItem loading = menu.findItem(R.id.playerLoadingMenuItem);
-    	loading.setActionView(R.layout.action_bar_indeterminate_progress);
+    	loading.setActionView(R.layout.action_bar_progress_gingerbread);
     	mIconController = new IconController(this,playPause,stop,loading);
     	
     	playPause.setOnMenuItemClickListener(new OnMenuItemClickListener() {
