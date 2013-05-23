@@ -1,6 +1,7 @@
 package edu.vt.wuvt.androidwuvt.view.mainactivity;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -16,9 +17,14 @@ import edu.vt.wuvt.androidwuvt.view.mainactivity.fragments.lastfifteen.LastFifte
 import edu.vt.wuvt.androidwuvt.view.mainactivity.fragments.nowplaying.NowPlayingFragment;
 import edu.vt.wuvt.androidwuvt.view.mainactivity.fragments.request.RequestFragment;
 
+import android.app.ActionBar.LayoutParams;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 
@@ -140,13 +146,13 @@ public class MainActivity extends SherlockFragmentActivity {
 	private void createTabs(Bundle savedInstanceState) {
         mTabsAdapter = new TabsAdapter(this, mViewPager);
         final com.actionbarsherlock.app.ActionBar bar = getSupportActionBar();
-        mTabsAdapter.addTab(bar.newTab().setText("Now Playing"),
+        mTabsAdapter.addTab(bar.newTab().setCustomView(R.layout.now_playing_tab_view),
                 NowPlayingFragment.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText("Last Fifteen"),
+        mTabsAdapter.addTab(bar.newTab().setCustomView(R.layout.last_fifteen_tab_view),
                 LastFifteenFragment.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText("Favorites"),
+        mTabsAdapter.addTab(bar.newTab().setCustomView(R.layout.favorites_tab_view),
                 FavoritesFragment.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText("Request"),
+        mTabsAdapter.addTab(bar.newTab().setCustomView(R.layout.request_tab_view),
                 RequestFragment.class, null);
 
 
